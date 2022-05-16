@@ -70,7 +70,6 @@ public class Maze extends JFrame {
                     result = dfs();
                     break;
                 case Definitions.ALGORITHM_BFS:
-                    result = bfs();
                     break;
             }
             JOptionPane.showMessageDialog(null,  result ? "FOUND SOLUTION" : "NO SOLUTION FOR THIS MAZE");
@@ -78,72 +77,51 @@ public class Maze extends JFrame {
         }).start();
     }
 
-
-    public boolean bfs(){
-        Queue<Vertex> vertices = new LinkedList<>();
-        vertices.add(new Vertex(this.startRow,this.startColumn));
-        while (!vertices.isEmpty()){
-            Vertex currentVertex = vertices.remove();
-            if (!isVisited(currentVertex)){
+    public boolean dfs() {
+        Stack<Vertex> vertices = new Stack<>();
+        vertices.add(new Vertex(this.startRow, this.startColumn));
+        while (!vertices.isEmpty()) {
+            Vertex currentVertex = vertices.pop();
+            if (!isVisited(currentVertex)) {
+                setSquareAsVisited(currentVertex.getRow(), currentVertex.getColumn(), true);
                 this.visited[currentVertex.getRow()][currentVertex.getColumn()] = true;
-                setSquareAsVisited(currentVertex.getRow(),currentVertex.getColumn(),true);
-                if (currentVertex.getRow()==this.values.length-1 && currentVertex.getColumn() ==this.values.length-1){
+                if (currentVertex.getRow() == this.values.length - 1 && currentVertex.getColumn() == this.values.length - 1) {
                     return true;
                 }
-                List<Vertex> currentNeighbors = getNeighbors(currentVertex);
-                for (Vertex neighbor : currentNeighbors){
-                    if (!isVisited(neighbor)){
-                        vertices.add(neighbor);
+                List <Vertex> neighbors = getNeighbors(currentVertex);
+                for (Vertex vertex : neighbors){
+                    if (!isVisited(vertex)) {
+                        vertices.push(vertex);
                     }
                 }
             }
-        }
-        return false;
-    }
-    public boolean dfs(){
-        Stack<Vertex>vertices = new Stack<>();
-        vertices.add(new Vertex(this.startRow,this.startColumn));
-        while (!vertices.isEmpty()){
-            Vertex currentVertex= vertices.pop();
-            if (!isVisited(currentVertex)){
-                this.visited[currentVertex.getRow()][currentVertex.getColumn()] = true;
-                setSquareAsVisited(currentVertex.getRow(),currentVertex.getColumn(),true);
-                if (currentVertex.getRow()==this.values.length-1 && currentVertex.getColumn() ==this.values.length-1){
-                    return true;
-                }
-                List<Vertex> currentNeighbors = getNeighbors(currentVertex);
-                for (Vertex neighbor : currentNeighbors){
-                    if (!isVisited(neighbor)){
-                        vertices.add(neighbor);
-                    }
-                }
-            }
-        }
-        return false;
 
+
+        }
+        return false;
     }
 
 
     public boolean isVisited(Vertex vertex){
         return this.visited[vertex.getRow()][vertex.getColumn()];
     }
-    public List<Vertex> getNeighbors(Vertex currentVertex){
+    public List<Vertex>getNeighbors(Vertex currentVertex){
         List<Vertex> neighbors = new ArrayList<>();
-        neighbors.add(new Vertex(currentVertex.getRow(),currentVertex.getColumn()+1)); // right
         neighbors.add(new Vertex(currentVertex.getRow(),currentVertex.getColumn()-1)); // left
+        neighbors.add(new Vertex(currentVertex.getRow(),currentVertex.getColumn()+1)); // right
         neighbors.add(new Vertex(currentVertex.getRow()-1,currentVertex.getColumn())); // up
         neighbors.add(new Vertex(currentVertex.getRow()+1,currentVertex.getColumn())); // down
         checkBoundsAndObstacles(neighbors);
         return neighbors;
     }
     public void checkBoundsAndObstacles(List<Vertex>neighbors){     // size = 3  row<=0 row>=2
-        List<Vertex> vertexToRemoveList = new ArrayList<>();
-        for (Vertex vertex : neighbors){
+        List<Vertex> copyList = new ArrayList<>(neighbors); // copy
+        for (Vertex vertex : copyList){
             if ((vertex.getRow()<0) || (vertex.getRow()>this.values.length-1) || (vertex.getColumn()<0) || (vertex.getColumn()>this.values.length-1) || (this.values[vertex.getRow()][vertex.getColumn()] == Definitions.OBSTACLE)){
-                vertexToRemoveList.add(vertex);
+                neighbors.remove(vertex);
             }
         }
-        neighbors.removeAll(vertexToRemoveList);
+
     }
 
     public void setSquareAsVisited(int x, int y, boolean visited) {
