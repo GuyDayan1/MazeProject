@@ -72,39 +72,47 @@ public class Maze extends JFrame {
                 case Definitions.ALGORITHM_BFS:
                     break;
             }
-            JOptionPane.showMessageDialog(null,  result ? "FOUND SOLUTION" : "NO SOLUTION FOR THIS MAZE");
+            JOptionPane.showMessageDialog(null, result ? "FOUND SOLUTION" : "NO SOLUTION FOR THIS MAZE");
 
         }).start();
     }
 
     public boolean dfs() {
-        Stack<Vertex> vertices = new Stack<>();
-        vertices.add(new Vertex(this.startRow, this.startColumn));
-        while (!vertices.isEmpty()) {
-            Vertex currentVertex = vertices.pop();
-            if (!isVisited(currentVertex)) {
-                setSquareAsVisited(currentVertex.getRow(), currentVertex.getColumn(), true);
-                this.visited[currentVertex.getRow()][currentVertex.getColumn()] = true;
-                if (currentVertex.getRow() == this.values.length - 1 && currentVertex.getColumn() == this.values.length - 1) {
-                    return true;
-                }
-                List <Vertex> neighbors = getNeighbors(currentVertex);
-                for (Vertex vertex : neighbors){
-                    if (!isVisited(vertex)) {
-                        vertices.push(vertex);
+        {
+            Stack<Vertex> vertices = new Stack<>();
+            vertices.add(new Vertex(this.startRow, this.startColumn));
+            while (!vertices.isEmpty()) {
+                Vertex currentVertex = vertices.pop();
+                if (!isVisited(currentVertex)) {
+                    setSquareAsVisited(currentVertex.getRow(), currentVertex.getColumn(), true);
+                    this.visited[currentVertex.getRow()][currentVertex.getColumn()] = true;
+                    if (currentVertex.getRow() == this.values.length - 1 && currentVertex.getColumn() == this.values.length - 1) {
+                        return true;
+                    }
+                    List<Vertex> neighbors = getNeighbors(currentVertex);
+                    int count = 0 ;
+                    for (Vertex vertex : neighbors) {
+                        if (!isVisited(vertex)) {
+                            vertices.push(vertex);
+                            count++;
+                        }
+                    }
+                    if (count == 0){
+                        setSquareAsVisited(currentVertex.getRow(), currentVertex.getColumn(), false);
                     }
                 }
+
             }
-
-
+            return false;
         }
-        return false;
     }
+
 
 
     public boolean isVisited(Vertex vertex){
         return this.visited[vertex.getRow()][vertex.getColumn()];
     }
+
     public List<Vertex>getNeighbors(Vertex currentVertex){
         List<Vertex> neighbors = new ArrayList<>();
         neighbors.add(new Vertex(currentVertex.getRow(),currentVertex.getColumn()-1)); // left
@@ -114,10 +122,13 @@ public class Maze extends JFrame {
         checkBoundsAndObstacles(neighbors);
         return neighbors;
     }
+
     public void checkBoundsAndObstacles(List<Vertex>neighbors){     // size = 3  row<=0 row>=2
         List<Vertex> copyList = new ArrayList<>(neighbors); // copy
         for (Vertex vertex : copyList){
-            if ((vertex.getRow()<0) || (vertex.getRow()>this.values.length-1) || (vertex.getColumn()<0) || (vertex.getColumn()>this.values.length-1) || (this.values[vertex.getRow()][vertex.getColumn()] == Definitions.OBSTACLE)){
+            if ((vertex.getRow()<0) || (vertex.getRow()>this.values.length-1) || (vertex.getColumn()<0) ||
+                    (vertex.getColumn()>this.values.length-1) ||
+                    (this.values[vertex.getRow()][vertex.getColumn()] == Definitions.OBSTACLE)){
                 neighbors.remove(vertex);
             }
         }
