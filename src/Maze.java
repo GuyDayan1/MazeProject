@@ -78,7 +78,6 @@ public class Maze extends JFrame {
     }
 
     public boolean dfs() {
-        {
             Stack<Vertex> vertices = new Stack<>();
             vertices.add(new Vertex(this.startRow, this.startColumn));
             while (!vertices.isEmpty()) {
@@ -90,29 +89,22 @@ public class Maze extends JFrame {
                         return true;
                     }
                     List<Vertex> neighbors = getNeighbors(currentVertex);
-                    int count = 0 ;
                     for (Vertex vertex : neighbors) {
                         if (!isVisited(vertex)) {
                             vertices.push(vertex);
-                            count++;
                         }
-                    }
-                    if (count == 0){
-                        setSquareAsVisited(currentVertex.getRow(), currentVertex.getColumn(), false);
                     }
                 }
 
             }
-            return false;
-        }
-    }
 
+        return false;
+    }
 
 
     public boolean isVisited(Vertex vertex){
         return this.visited[vertex.getRow()][vertex.getColumn()];
     }
-
     public List<Vertex>getNeighbors(Vertex currentVertex){
         List<Vertex> neighbors = new ArrayList<>();
         neighbors.add(new Vertex(currentVertex.getRow(),currentVertex.getColumn()-1)); // left
@@ -122,7 +114,6 @@ public class Maze extends JFrame {
         checkBoundsAndObstacles(neighbors);
         return neighbors;
     }
-
     public void checkBoundsAndObstacles(List<Vertex>neighbors){     // size = 3  row<=0 row>=2
         List<Vertex> copyList = new ArrayList<>(neighbors); // copy
         for (Vertex vertex : copyList){
