@@ -1,2 +1,2 @@
 # MazeProject
-using dfs - press 2
+using dfs 
